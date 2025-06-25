@@ -32,11 +32,14 @@ def get_natal_chart(data: NatalRequest, request: Request):
     if auth != f"Bearer {API_KEY}":
         raise HTTPException(status_code=401, detail="Unauthorized")
 
-   # Convert "YYYY-MM-DD" → "DD/MM/YYYY"
-day, month, year = data.date.split("-")[2], data.date.split("-")[1], data.date.split("-")[0]
-formatted_date = f"{day}/{month}/{year}"
-dt = Datetime(formatted_date, data.time, data.tz)
+    # Convert "YYYY-MM-DD" → "DD/MM/YYYY"
+    try:
+        year, month, day = data.date.split("-")
+        formatted_date = f"{day}/{month}/{year}"
+    except:
+        raise HTTPException(status_code=400, detail="Invalid date format")
 
+    dt = Datetime(formatted_date, data.time, data.tz)
     pos = GeoPos(data.lat, data.lon)
     chart = Chart(dt, pos)
 
